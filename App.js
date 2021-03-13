@@ -1,28 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
-import AppBar from './components/AppBar'
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import DrawerContent from './components/DrawerContent'
+import HomeScreen from './screens/HomeScreen'
 
 export default function App() {
-  const [cityName, setCityName] = useState('')
-
-  const switchDrawerHandler = () => {
-
-  }
-
-  const searchHandler = () => {
-
-  }
+  const Drawer = createDrawerNavigator()
 
   return (
-      <PaperProvider>
-        <StatusBar style="auto" />
-        <AppBar title={cityName} switchDrawerHandler={switchDrawerHandler} searchHandler={searchHandler} />
-      </PaperProvider>
+    <NavigationContainer>
+      <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
+        <Drawer.Screen name="Home" component={(nav) => <HomeScreen navigation={nav} />} />
+      </Drawer.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  
-});
