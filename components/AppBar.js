@@ -1,13 +1,21 @@
 import React from 'react'
 import {StyleSheet} from 'react-native'
-import { Appbar } from 'react-native-paper';
+import { Appbar, Searchbar } from 'react-native-paper';
 
-const AppBar = ({ title, searchHandler, switchDrawerHandler}) => {
+const AppBar = ({ title, setTitle, searchHandler, switchDrawerHandler}) => {
     return (
         <Appbar.Header style={styles.header}>
-            <Appbar.Action icon="menu" onPress={switchDrawerHandler}/>
-            <Appbar.Content title={title} titleStyle={styles.text} />
-            <Appbar.Action icon="magnify" onPress={searchHandler}/>
+            {/* <Appbar.Action icon="menu" onPress={switchDrawerHandler}/> */}
+            {/* <Appbar.Content title={title} titleStyle={styles.text} /> */}
+            <Searchbar
+                icon="menu"
+                onIconPress={switchDrawerHandler} 
+                style={styles.header} 
+                inputStyle={styles.text} 
+                placeholder="Szukaj" 
+                onChangeText={(query) => setTitle(query)} 
+                value={title}/>
+            {/* <Appbar.Action icon="magnify" onPress={searchHandler}/> */}
         </Appbar.Header>
     );
 }
