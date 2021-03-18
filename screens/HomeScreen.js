@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Image, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import AppBar from '../components/AppBar'
 import {Text} from 'react-native-paper'
@@ -33,39 +33,46 @@ const HomeScreen = ({ navigation }) => {
       
     }
 
-    Keyboard.addListener("keyboardDidHide", () => {
+    const fetchData = () => {
       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
-        .then((response) => {
-          if(response.status == 404) {
-            setResponseFail(true)
-          }
-          return response.json()
-        })
-        .then((json) => {
-            var date = new Date((json.dt+json.timezone)*1000)
-            var day = days[date.getDay()]
-            var monthDay = date.getDate()
-            var month = months[date.getMonth()]
-            var hours = "0" + date.getHours()
-            var minutes = "0" + date.getMinutes()
-            var timeString = day + ", " + monthDay + " " + month + " " + hours.substr(-2) + ":" + minutes.substr(-2)
-            setTime(timeString)
-            setTemperature(parseInt(json.main.temp) + "°")
-            setMinTemp(parseInt(json.main.temp_min) + "°C")
-            setMaxTemp(parseInt(json.main.temp_max) + "°C")
-            setWeatherDescription(json.weather[0].description)
-            setWeatherIcon("http://openweathermap.org/img/wn/" + json.weather[0].icon + "@2x.png")
-            setSunset(new Date(json.sys.sunset*1000).getHours() + ":" + ("0" + new Date(json.sys.sunset*1000).getMinutes()).substr(-2))
-            setSunrise(new Date(json.sys.sunrise*1000).getHours() + ":" + ("0" + new Date(json.sys.sunrise*1000).getMinutes()).substr(-2))
-            setPressure(json.main.pressure + " hPa")
-            setWind(json.wind.speed + " m/s")
-            setHumidity(json.main.humidity + " %")
-            setClouds(json.clouds.all + " %")
-        })
-        .catch((error) => {
-          console.error(error);
+      .then((response) => {
+        console.log(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
+        if(response.status == 404) {
+          setResponseFail(true)
+        }
+        return response.json()
       })
-    })
+      .then((json) => {
+          var date = new Date((json.dt+json.timezone)*1000)
+          var day = days[date.getDay()]
+          var monthDay = date.getDate()
+          var month = months[date.getMonth()]
+          var hours = "0" + date.getHours()
+          var minutes = "0" + date.getMinutes()
+          var timeString = day + ", " + monthDay + " " + month + " " + hours.substr(-2) + ":" + minutes.substr(-2)
+          setTime(timeString)
+          setTemperature(parseInt(json.main.temp) + "°")
+          setMinTemp(parseInt(json.main.temp_min) + "°C")
+          setMaxTemp(parseInt(json.main.temp_max) + "°C")
+          setWeatherDescription(json.weather[0].description)
+          setWeatherIcon("http://openweathermap.org/img/wn/" + json.weather[0].icon + "@2x.png")
+          setSunset(new Date(json.sys.sunset*1000).getHours() + ":" + ("0" + new Date(json.sys.sunset*1000).getMinutes()).substr(-2))
+          setSunrise(new Date(json.sys.sunrise*1000).getHours() + ":" + ("0" + new Date(json.sys.sunrise*1000).getMinutes()).substr(-2))
+          setPressure(json.main.pressure + " hPa")
+          setWind(json.wind.speed + " m/s")
+          setHumidity(json.main.humidity + " %")
+          setClouds(json.clouds.all + " %")
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+    }
+
+    useEffect(() => {
+      Keyboard.addListener("keyboardDidHide", () => {
+        fetchData()
+      })
+    }, [])
 
     var content = <Text>{"Nie znaleziono miasta"}</Text>
     if(!responseFail) {
@@ -95,7 +102,6 @@ const HomeScreen = ({ navigation }) => {
       )
     }
     else {
-      console.log("!!!")
       content = <Text>{"Nie znaleziono miasta"}</Text>
     }
   
