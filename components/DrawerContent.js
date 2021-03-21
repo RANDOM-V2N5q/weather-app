@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import {StyleSheet, View} from 'react-native'
 import { Title, Text, Subheading, Paragraph, Headline, Caption, Switch } from 'react-native-paper';
 import DrawerSwitch from './DrawerSwitch';
-
+import { Context } from '../components/Context'
 
 const DrawerContent = () => {
+    const {toggleTheme, isThemeDark} = useContext(Context)
+    var val = isThemeDark()
+
     return ( 
         <View style={styles.container}>
             <Title style={styles.sectionHeader}>{"Ułatwienia dostępu"}</Title>
-            <DrawerSwitch text={"Dla ślepych"}/>
-            <DrawerSwitch text={"Ciemny motyw"}/>
+            <DrawerSwitch text={"Ciemny motyw"} onValueChange={toggleTheme} Value={val}/>
         </View>
     );
 }
