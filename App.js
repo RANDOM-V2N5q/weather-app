@@ -11,19 +11,12 @@ export default function App() {
 
   const [isDarkTheme, setIsDarkTheme] = useState(false)
 
-  const contextFunctions = {
-    toggleTheme: () => {
-      setIsDarkTheme(isDarkTheme => !isDarkTheme)
-    },
-    isThemeDark: () => {
-      return isDarkTheme
-    }
-  }
+  const contextFunctions = {isDarkTheme, setIsDarkTheme}
 
   return (
     <Context.Provider value={contextFunctions}>
-      <PaperProvider theme={(isDarkTheme) ? PaperDarkTheme : PaperDefaultTheme}>
-        <NavigationContainer theme={(isDarkTheme) ? DarkTheme : DefaultTheme}>
+      <PaperProvider theme={(isDarkTheme) ? PaperDarkTheme : {...PaperDefaultTheme, colors: {...PaperDefaultTheme.colors, background: "#ddd"}}}>
+        <NavigationContainer theme={(isDarkTheme) ? DarkTheme : {...DefaultTheme, colors: {...DefaultTheme.colors, background: "#ddd", card: "#ddd"}}}>
           <Drawer.Navigator drawerContent={props => <DrawerContent {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen} />
           </Drawer.Navigator>

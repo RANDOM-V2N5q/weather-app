@@ -1,28 +1,31 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, Image, TouchableWithoutFeedback, Keyboard } from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
+import { View, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Button } from 'react-native'
 import AppBar from '../components/AppBar'
 import {Text} from 'react-native-paper'
 import WeatherInfo from '../components/WeatherInfo'
 import { days } from '../Strings/Days'
 import { months } from '../Strings/Months'
+import { Context } from '../components/Context'
 
 const HomeScreen = ({ navigation }) => {
     const APIkey = "3bd15a07a0927e0dd53521dcf50e5e67"
-    const [cityName, setCityName] = useState('Gliwice')
-    const [time, setTime] = useState('niedziela, 7 marca 20:21')
-    const [temperature, setTemperature] = useState('25°')
-    const [minTemp, setMinTemp] = useState('20°')
-    const [maxTemp, setMaxTemp] = useState('25°')
-    const [weatherDescription, setWeatherDescription] = useState('kilka chmur')
-    const [weatherIcon, setWeatherIcon] = useState('http://openweathermap.org/img/wn/10d@2x.png')
-    const [sunset, setSunset] = useState('7:00')
-    const [sunrise, setSunrise] = useState('17:00')
-    const [pressure, setPressure] = useState('1015 hPa')
-    const [wind, setWind] = useState('99 m/s')
-    const [humidity, setHumidity] = useState('100 %')
-    const [clouds, setClouds] = useState('100 %')
-    const [responseFail, setResponseFail] = useState(false)
+    const [cityName, setCityName] = useState('')
+    const [time, setTime] = useState('')
+    const [temperature, setTemperature] = useState('')
+    const [minTemp, setMinTemp] = useState('')
+    const [maxTemp, setMaxTemp] = useState('')
+    const [weatherDescription, setWeatherDescription] = useState('')
+    const [weatherIcon, setWeatherIcon] = useState('')
+    const [sunset, setSunset] = useState('')
+    const [sunrise, setSunrise] = useState('')
+    const [pressure, setPressure] = useState('')
+    const [wind, setWind] = useState('')
+    const [humidity, setHumidity] = useState('')
+    const [clouds, setClouds] = useState('')
+    const [responseFail, setResponseFail] = useState(true)
+
+    const {isDarkTheme} = useContext(Context)
 
     const switchDrawerHandler = () => {
       navigation.toggleDrawer()
@@ -30,19 +33,22 @@ const HomeScreen = ({ navigation }) => {
     }
   
     const searchHandler = () => {
-      
+      if(cityName != "") {
+        fetchData()
+      }
     }
 
     const fetchData = () => {
       fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
       .then((response) => {
         console.log(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
-        if(response.status == 404) {
+        if(response.status == 404 || response.status == 400) {
           setResponseFail(true)
         }
         return response.json()
       })
       .then((json) => {
+        if(json.cod != "404" && json.cod != "400") {
           var date = new Date((json.dt+json.timezone)*1000)
           var day = days[date.getDay()]
           var monthDay = date.getDate()
@@ -62,19 +68,15 @@ const HomeScreen = ({ navigation }) => {
           setWind(json.wind.speed + " m/s")
           setHumidity(json.main.humidity + " %")
           setClouds(json.clouds.all + " %")
+          setResponseFail(false)
+        }
       })
       .catch((error) => {
         console.error(error);
       })
     }
 
-    useEffect(() => {
-      Keyboard.addListener("keyboardDidHide", () => {
-        fetchData()
-      })
-    }, [])
-
-    var content = <Text>{"Nie znaleziono miasta"}</Text>
+    var content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
     if(!responseFail) {
       content = (
         <View>
@@ -86,29 +88,41 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.temperatureContainer}>
             <Text style={styles.temperature}>{temperature}</Text>
             <View style={styles.minMaxTemperatureContainer}>
-              <Text style={[styles.minMaxTemperature, styles.borderBottom]}>{maxTemp}</Text>
+              <Text style={[styles.minMaxTemperature, isDarkTheme ? styles.borderBottomWhite : styles.borderBottomBlack]}>{maxTemp}</Text>
               <Text style={styles.minMaxTemperature}>{minTemp}</Text>
             </View>
           </View>
-          <View style={styles.weatherInfoContainer}>
-            <WeatherInfo text={sunrise} imagePath={require('../icons/sunrise.png')}/>
-            <WeatherInfo text={sunset} imagePath={require('../icons/sunset.png')}/>
-            <WeatherInfo text={pressure} imagePath={require('../icons/atmospheric-pressure.png')}/>
-            <WeatherInfo text={wind} imagePath={require('../icons/wind.png')}/>
-            <WeatherInfo text={humidity} imagePath={require('../icons/humidity.png')}/>
-            <WeatherInfo text={clouds} imagePath={require('../icons/cloud.png')}/>
-          </View>
+          {isDarkTheme && (
+            <View style={styles.weatherInfoContainer}>
+              <WeatherInfo text={sunrise} imagePath={require('../icons/darkTheme/sunrise.png')}/>
+              <WeatherInfo text={sunset} imagePath={require('../icons/darkTheme/sunset.png')}/>
+              <WeatherInfo text={pressure} imagePath={require('../icons/darkTheme/atmospheric-pressure.png')}/>
+              <WeatherInfo text={wind} imagePath={require('../icons/darkTheme/wind.png')}/>
+              <WeatherInfo text={humidity} imagePath={require('../icons/darkTheme/humidity.png')}/>
+              <WeatherInfo text={clouds} imagePath={require('../icons/darkTheme/cloud.png')}/>
+            </View>
+          )}
+          {!isDarkTheme && (
+            <View style={styles.weatherInfoContainer}>
+              <WeatherInfo text={sunrise} imagePath={require('../icons/lightTheme/sunrise.png')}/>
+              <WeatherInfo text={sunset} imagePath={require('../icons/lightTheme/sunset.png')}/>
+              <WeatherInfo text={pressure} imagePath={require('../icons/lightTheme/atmospheric-pressure.png')}/>
+              <WeatherInfo text={wind} imagePath={require('../icons/lightTheme/wind.png')}/>
+              <WeatherInfo text={humidity} imagePath={require('../icons/lightTheme/humidity.png')}/>
+              <WeatherInfo text={clouds} imagePath={require('../icons/lightTheme/cloud.png')}/>
+            </View>
+          )}
         </View>
       )
     }
     else {
-      content = <Text>{"Nie znaleziono miasta"}</Text>
+      content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
     }
   
     return (
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.container}>
-          <StatusBar style="auto" />
+          <StatusBar style={isDarkTheme ? "light" : "dark"} />
           <AppBar title={cityName} setTitle={setCityName} switchDrawerHandler={switchDrawerHandler} searchHandler={searchHandler} />
           {content}
         </View>
@@ -140,8 +154,13 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
 
-  borderBottom: {
+  borderBottomBlack: {
     borderBottomColor: "black",
+    borderBottomWidth: StyleSheet.hairlineWidth
+  },
+
+  borderBottomWhite: {
+    borderBottomColor: "white",
     borderBottomWidth: StyleSheet.hairlineWidth
   },
 
@@ -177,6 +196,10 @@ const styles = StyleSheet.create({
   weatherImage: {
     width: 100,
     height: 100
+  },
+
+  noCity: {
+    textAlign: "center",
   }
 })
  

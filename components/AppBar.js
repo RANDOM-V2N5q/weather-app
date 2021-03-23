@@ -12,9 +12,10 @@ const AppBar = ({ title, setTitle, searchHandler, switchDrawerHandler}) => {
                 onIconPress={switchDrawerHandler} 
                 style={styles.header} 
                 inputStyle={styles.text} 
-                placeholder="Szukaj" 
+                placeholder="Podaj nazwę miasta" 
                 onChangeText={(query) => setTitle(query)} 
-                value={title}/>
+                value={title}
+                onEndEditing={searchHandler}/>
             {/* <Appbar.Action icon="magnify" onPress={searchHandler}/> */}
         </Appbar.Header>
     );

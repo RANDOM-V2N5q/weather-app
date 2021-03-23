@@ -5,13 +5,12 @@ import DrawerSwitch from './DrawerSwitch';
 import { Context } from '../components/Context'
 
 const DrawerContent = () => {
-    const {toggleTheme, isThemeDark} = useContext(Context)
-    var val = isThemeDark()
+    const {setIsDarkTheme, isDarkTheme} = useContext(Context)
 
     return ( 
         <View style={styles.container}>
             <Title style={styles.sectionHeader}>{"Ułatwienia dostępu"}</Title>
-            <DrawerSwitch text={"Ciemny motyw"} onValueChange={toggleTheme} Value={val}/>
+            <DrawerSwitch text={"Ciemny motyw"} onValueChange={() => setIsDarkTheme(val => !val)} Value={isDarkTheme}/>
         </View>
     );
 }
