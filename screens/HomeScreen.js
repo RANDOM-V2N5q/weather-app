@@ -1,55 +1,54 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect, useContext } from 'react'
-import { View, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Button } from 'react-native'
+import React, { useState, useContext } from 'react'
+import { View, StyleSheet, Image, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import AppBar from '../components/AppBar'
-import {Text} from 'react-native-paper'
+import { Text } from 'react-native-paper'
 import WeatherInfo from '../components/WeatherInfo'
 import { days } from '../Strings/Days'
 import { months } from '../Strings/Months'
 import { Context } from '../components/Context'
 
 const HomeScreen = ({ navigation }) => {
-    const APIkey = "3bd15a07a0927e0dd53521dcf50e5e67"
-    const [cityName, setCityName] = useState('')
-    const [time, setTime] = useState('')
-    const [temperature, setTemperature] = useState('')
-    const [minTemp, setMinTemp] = useState('')
-    const [maxTemp, setMaxTemp] = useState('')
-    const [weatherDescription, setWeatherDescription] = useState('')
-    const [weatherIcon, setWeatherIcon] = useState('')
-    const [sunset, setSunset] = useState('')
-    const [sunrise, setSunrise] = useState('')
-    const [pressure, setPressure] = useState('')
-    const [wind, setWind] = useState('')
-    const [humidity, setHumidity] = useState('')
-    const [clouds, setClouds] = useState('')
-    const [responseFail, setResponseFail] = useState(true)
+  const APIkey = "3bd15a07a0927e0dd53521dcf50e5e67"
+  const [cityName, setCityName] = useState('')
+  const [time, setTime] = useState('')
+  const [temperature, setTemperature] = useState('')
+  const [minTemp, setMinTemp] = useState('')
+  const [maxTemp, setMaxTemp] = useState('')
+  const [weatherDescription, setWeatherDescription] = useState('')
+  const [weatherIcon, setWeatherIcon] = useState('')
+  const [sunset, setSunset] = useState('')
+  const [sunrise, setSunrise] = useState('')
+  const [pressure, setPressure] = useState('')
+  const [wind, setWind] = useState('')
+  const [humidity, setHumidity] = useState('')
+  const [clouds, setClouds] = useState('')
+  const [responseFail, setResponseFail] = useState(true)
 
-    const {isDarkTheme} = useContext(Context)
+  const { darkTheme } = useContext(Context)
 
-    const switchDrawerHandler = () => {
-      navigation.toggleDrawer()
-      Keyboard.dismiss()
+  const switchDrawerHandler = () => {
+    navigation.toggleDrawer()
+    Keyboard.dismiss()
+  }
+
+  const searchHandler = () => {
+    if (cityName != "") {
+      fetchData()
     }
-  
-    const searchHandler = () => {
-      if(cityName != "") {
-        fetchData()
-      }
-    }
+  }
 
-    const fetchData = () => {
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
+  const fetchData = () => {
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
       .then((response) => {
-        console.log(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&lang=pl&appid=${APIkey}`)
-        if(response.status == 404 || response.status == 400) {
+        if (response.status == 404 || response.status == 400) {
           setResponseFail(true)
         }
         return response.json()
       })
       .then((json) => {
-        if(json.cod != "404" && json.cod != "400") {
-          var date = new Date((json.dt+json.timezone)*1000)
+        if (json.cod != "404" && json.cod != "400") {
+          var date = new Date((json.dt + json.timezone) * 1000)
           var day = days[date.getDay()]
           var monthDay = date.getDate()
           var month = months[date.getMonth()]
@@ -62,8 +61,8 @@ const HomeScreen = ({ navigation }) => {
           setMaxTemp(parseInt(json.main.temp_max) + "°C")
           setWeatherDescription(json.weather[0].description)
           setWeatherIcon("http://openweathermap.org/img/wn/" + json.weather[0].icon + "@2x.png")
-          setSunset(new Date(json.sys.sunset*1000).getHours() + ":" + ("0" + new Date(json.sys.sunset*1000).getMinutes()).substr(-2))
-          setSunrise(new Date(json.sys.sunrise*1000).getHours() + ":" + ("0" + new Date(json.sys.sunrise*1000).getMinutes()).substr(-2))
+          setSunset(new Date(json.sys.sunset * 1000).getHours() + ":" + ("0" + new Date(json.sys.sunset * 1000).getMinutes()).substr(-2))
+          setSunrise(new Date(json.sys.sunrise * 1000).getHours() + ":" + ("0" + new Date(json.sys.sunrise * 1000).getMinutes()).substr(-2))
           setPressure(json.main.pressure + " hPa")
           setWind(json.wind.speed + " m/s")
           setHumidity(json.main.humidity + " %")
@@ -74,60 +73,60 @@ const HomeScreen = ({ navigation }) => {
       .catch((error) => {
         console.error(error);
       })
-    }
+  }
 
-    var content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
-    if(!responseFail) {
-      content = (
-        <View>
-          <Text style={styles.time}>{time}</Text>
-          <View style={styles.weather}>
-            <Image style={styles.weatherImage} source={{uri: weatherIcon}}/>
-            <Text style={styles.weatherDescription}>{weatherDescription}</Text>
-          </View>
-          <View style={styles.temperatureContainer}>
-            <Text style={styles.temperature}>{temperature}</Text>
-            <View style={styles.minMaxTemperatureContainer}>
-              <Text style={[styles.minMaxTemperature, isDarkTheme ? styles.borderBottomWhite : styles.borderBottomBlack]}>{maxTemp}</Text>
-              <Text style={styles.minMaxTemperature}>{minTemp}</Text>
-            </View>
-          </View>
-          {isDarkTheme && (
-            <View style={styles.weatherInfoContainer}>
-              <WeatherInfo text={sunrise} imagePath={require('../icons/darkTheme/sunrise.png')}/>
-              <WeatherInfo text={sunset} imagePath={require('../icons/darkTheme/sunset.png')}/>
-              <WeatherInfo text={pressure} imagePath={require('../icons/darkTheme/atmospheric-pressure.png')}/>
-              <WeatherInfo text={wind} imagePath={require('../icons/darkTheme/wind.png')}/>
-              <WeatherInfo text={humidity} imagePath={require('../icons/darkTheme/humidity.png')}/>
-              <WeatherInfo text={clouds} imagePath={require('../icons/darkTheme/cloud.png')}/>
-            </View>
-          )}
-          {!isDarkTheme && (
-            <View style={styles.weatherInfoContainer}>
-              <WeatherInfo text={sunrise} imagePath={require('../icons/lightTheme/sunrise.png')}/>
-              <WeatherInfo text={sunset} imagePath={require('../icons/lightTheme/sunset.png')}/>
-              <WeatherInfo text={pressure} imagePath={require('../icons/lightTheme/atmospheric-pressure.png')}/>
-              <WeatherInfo text={wind} imagePath={require('../icons/lightTheme/wind.png')}/>
-              <WeatherInfo text={humidity} imagePath={require('../icons/lightTheme/humidity.png')}/>
-              <WeatherInfo text={clouds} imagePath={require('../icons/lightTheme/cloud.png')}/>
-            </View>
-          )}
+  var content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
+  if (!responseFail) {
+    content = (
+      <View>
+        <Text style={styles.time}>{time}</Text>
+        <View style={styles.weather}>
+          <Image style={styles.weatherImage} source={{ uri: weatherIcon }} />
+          <Text style={styles.weatherDescription}>{weatherDescription}</Text>
         </View>
-      )
-    }
-    else {
-      content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
-    }
-  
-    return (
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
-          <StatusBar style={isDarkTheme ? "light" : "dark"} />
-          <AppBar title={cityName} setTitle={setCityName} switchDrawerHandler={switchDrawerHandler} searchHandler={searchHandler} />
-          {content}
+        <View style={styles.temperatureContainer}>
+          <Text style={styles.temperature}>{temperature}</Text>
+          <View style={styles.minMaxTemperatureContainer}>
+            <Text style={[styles.minMaxTemperature, darkTheme ? styles.borderBottomWhite : styles.borderBottomBlack]}>{maxTemp}</Text>
+            <Text style={styles.minMaxTemperature}>{minTemp}</Text>
+          </View>
         </View>
-      </TouchableWithoutFeedback>
-    );
+        {darkTheme && (
+          <View style={styles.weatherInfoContainer}>
+            <WeatherInfo text={sunrise} imagePath={require('../icons/darkTheme/sunrise.png')} />
+            <WeatherInfo text={sunset} imagePath={require('../icons/darkTheme/sunset.png')} />
+            <WeatherInfo text={pressure} imagePath={require('../icons/darkTheme/atmospheric-pressure.png')} />
+            <WeatherInfo text={wind} imagePath={require('../icons/darkTheme/wind.png')} />
+            <WeatherInfo text={humidity} imagePath={require('../icons/darkTheme/humidity.png')} />
+            <WeatherInfo text={clouds} imagePath={require('../icons/darkTheme/cloud.png')} />
+          </View>
+        )}
+        {!darkTheme && (
+          <View style={styles.weatherInfoContainer}>
+            <WeatherInfo text={sunrise} imagePath={require('../icons/lightTheme/sunrise.png')} />
+            <WeatherInfo text={sunset} imagePath={require('../icons/lightTheme/sunset.png')} />
+            <WeatherInfo text={pressure} imagePath={require('../icons/lightTheme/atmospheric-pressure.png')} />
+            <WeatherInfo text={wind} imagePath={require('../icons/lightTheme/wind.png')} />
+            <WeatherInfo text={humidity} imagePath={require('../icons/lightTheme/humidity.png')} />
+            <WeatherInfo text={clouds} imagePath={require('../icons/lightTheme/cloud.png')} />
+          </View>
+        )}
+      </View>
+    )
+  }
+  else {
+    content = <Text style={styles.noCity}>{"Nie znaleziono miasta"}</Text>
+  }
+
+  return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <StatusBar style={darkTheme ? "light" : "dark"} />
+        <AppBar title={cityName} setTitle={setCityName} switchDrawerHandler={switchDrawerHandler} searchHandler={searchHandler} />
+        {content}
+      </View>
+    </TouchableWithoutFeedback>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -202,5 +201,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   }
 })
- 
+
 export default HomeScreen;

@@ -1,16 +1,16 @@
-import React, { useContext }  from 'react';
-import {StyleSheet, View} from 'react-native'
-import { Title, Text, Subheading, Paragraph, Headline, Caption, Switch } from 'react-native-paper';
+import React, { useContext } from 'react';
+import { StyleSheet, View } from 'react-native'
+import { Title } from 'react-native-paper';
 import DrawerSwitch from './DrawerSwitch';
 import { Context } from '../components/Context'
 
 const DrawerContent = () => {
-    const {setIsDarkTheme, isDarkTheme} = useContext(Context)
+    const { setDarkTheme, darkTheme } = useContext(Context)
 
-    return ( 
+    return (
         <View style={styles.container}>
-            <Title style={styles.sectionHeader}>{"Ułatwienia dostępu"}</Title>
-            <DrawerSwitch text={"Ciemny motyw"} onValueChange={() => setIsDarkTheme(val => !val)} Value={isDarkTheme}/>
+            <Title style={styles.sectionHeader}>{"Personalizacja"}</Title>
+            <DrawerSwitch text={"Ciemny motyw"} onValueChange={() => setDarkTheme(val => !val)} value={darkTheme} />
         </View>
     );
 }
@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     },
 
     sectionHeader: {
-       marginLeft: 10,
-       marginBottom: 20
+        marginLeft: 10,
+        marginBottom: 20
     },
 })
 

@@ -1,9 +1,9 @@
 import React from 'react'
 import { View, StyleSheet, Image } from 'react-native'
-import {Text} from 'react-native-paper'
+import { Text } from 'react-native-paper'
 
-const WeatherInfo = ({text, imagePath}) => {
-    return ( 
+const WeatherInfo = ({ text, imagePath }) => {
+    return (
         <View style={styles.container}>
             <Image style={styles.image} source={imagePath} />
             <Text style={styles.text} >{text}</Text>
@@ -21,15 +21,15 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 20
     },
-    
+
     container: {
         flexDirection: 'row',
         alignItems: "center",
         width: "50%",
         padding: 10,
         paddingLeft: "10%"
-        
+
     }
 })
- 
+
 export default WeatherInfo;
